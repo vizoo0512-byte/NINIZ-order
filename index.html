@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NiNiz Studio 手作甜點訂購單</title>
+<style>
+:root{--bg:#FAF6F0;--card:#FFFFFF;--brown:#5C3D2E;--caramel:#C68B59;--line:#EADFD2;--soft:#F5EDE3;--warn:#B4572B;--on-brown:#FFFFFF;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#241B16;--card:#33261F;--brown:#F1E4D4;--caramel:#D9A06B;--line:#4A392F;--soft:#3D2E25;--warn:#E8956A;--on-brown:#2A1D16;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#241B16;--card:#33261F;--brown:#F1E4D4;--caramel:#D9A06B;--line:#4A392F;--soft:#3D2E25;--warn:#E8956A;--on-brown:#2A1D16;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--brown);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;line-height:1.6;padding-bottom:120px;-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;padding:20px 16px}
+header{text-align:center;padding:28px 0 8px}
+.brand{font-family:"Noto Serif TC","Songti TC",Georgia,serif;font-size:30px;letter-spacing:.08em;margin:0;font-weight:700}
+.sub{margin:6px 0 0;font-size:15px;letter-spacing:.2em;color:var(--caramel)}
+.ig{display:inline-block;margin-top:12px;padding:5px 14px;border:1px solid var(--caramel);border-radius:99px;color:var(--caramel);font-size:13px;text-decoration:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:16px;box-shadow:0 4px 18px rgba(92,61,46,.06)}
+h2{font-family:"Noto Serif TC","Songti TC",Georgia,serif;font-size:18px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+h2::before{content:"";width:4px;height:18px;border-radius:2px;background:var(--caramel)}
+details summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"＋";color:var(--caramel)}
+details[open] summary::after{content:"－"}
+details ul{margin:12px 0 0;padding-left:20px;font-size:14px}
+details li{margin-bottom:6px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer;font-size:14px}
+.opt:has(input:checked){border-color:var(--caramel);background:var(--soft)}
+.opt input{margin-top:4px;accent-color:var(--caramel)}
+.opt b{display:block;font-size:15px}
+.hint{font-size:13px;margin:4px 0 0;color:var(--caramel)}
+.hint.warn{color:var(--warn)}
+.note{font-size:12.5px;opacity:.75;margin:8px 0 0}
+.cat{font-size:13px;color:var(--caramel);letter-spacing:.1em;margin:14px 0 6px;font-weight:700}
+.cat small{opacity:.8;font-weight:400}
+.item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.item:last-child{border-bottom:0}
+.nm{flex:1;font-size:15px}
+.pr{font-size:13px;color:var(--caramel)}
+.qty{display:flex;align-items:center;gap:8px}
+.qty button{width:32px;height:32px;border-radius:50%;border:1px solid var(--caramel);background:transparent;color:var(--caramel);font-size:18px;line-height:1;cursor:pointer;padding:0}
+.qty button:active{background:var(--caramel);color:#fff}
+.qty span{min-width:20px;text-align:center;font-weight:700}
+.sb{min-width:52px;text-align:right;font-size:13px;opacity:.8}
+label.f{display:block;font-size:14px;font-weight:700;margin:14px 0 6px}
+input[type=text],input[type=tel],input[type=date],input[type=time],select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--brown);font:inherit;font-size:16px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--caramel);outline-offset:0}
+.row{display:flex;gap:8px}
+.row>*{flex:1;min-width:0}
+.fixed{padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--soft);font-weight:700}
+.pay{display:flex;gap:8px}
+.pay label{flex:1;text-align:center;padding:10px;border:1px solid var(--line);border-radius:10px;font-size:14px;cursor:pointer}
+.pay label:has(input:checked){border-color:var(--caramel);background:var(--soft);font-weight:700}
+.pay input{display:none}
+.sum div{display:flex;justify-content:space-between;padding:4px 0;font-size:14px}
+.sum .tot{border-top:1px solid var(--line);margin-top:6px;padding-top:10px;font-size:20px;font-weight:700}
+.btn{width:100%;border:0;border-radius:14px;padding:15px;background:var(--brown);color:var(--on-brown);font:inherit;font-size:16px;font-weight:700;letter-spacing:.06em;cursor:pointer;margin-top:12px}
+.btn:active{opacity:.85}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:center;z-index:5}
+.bar div{max-width:560px}
+.bar button{background:var(--caramel);color:#fff;border:0;padding:10px 18px;border-radius:99px;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.bar .t{font-size:13px}.bar .t b{font-size:18px}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--brown);color:var(--on-brown);padding:10px 18px;border-radius:99px;font-size:14px;z-index:9;display:none;max-width:90%;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.flash{animation:fl 1.4s ease}
+@keyframes fl{0%,100%{box-shadow:0 4px 18px rgba(92,61,46,.06)}30%{box-shadow:0 0 0 4px var(--caramel)}}
+.mask{position:fixed;inset:0;background:rgba(40,25,18,.55);display:none;align-items:center;justify-content:center;padding:24px;z-index:10}
+.mask.on{display:flex}
+.modal{background:var(--card);border-radius:18px;padding:24px;max-width:360px;width:100%;text-align:center}
+.modal p{margin:8px 0 16px;font-size:15px}
+.modal pre{text-align:left;white-space:pre-wrap;font:inherit;font-size:12.5px;background:var(--bg);padding:10px;border-radius:10px;max-height:160px;overflow:auto;display:none}
+footer{text-align:center;font-size:12px;opacity:.6;margin:24px 0 8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1 class="brand">NiNiz Studio</h1>
+  <p class="sub">手作甜點訂購單</p>
+  <a class="ig" href="https://www.instagram.com/niniz_studio" target="_blank" rel="noopener">IG｜@niniz_studio</a>
+</header>
+
+<section class="card">
+  <details open>
+    <summary>訂購小提醒</summary>
+    <ul>
+      <li>工作室為闆娘一人作業且半工半讀，甜點皆新鮮現做，建議<b>提前 7 天</b>預訂。</li>
+      <li>3 天內之急單需視課業與排程評估，並加收 <b>$100 急單處理費</b>（請先私訊確認檔期）。</li>
+      <li>可可豆餅乾（一包 8 個）與瑪德蓮（一盒 6 顆）口味皆不混搭。</li>
+      <li>四寸／六寸生日棉花糖餅乾歡迎先私訊討論檔期。</li>
+    </ul>
+  </details>
+</section>
+
+<section class="card">
+  <h2>淡大生專屬優惠</h2>
+  <label class="opt"><input type="radio" name="promo" value="0" checked><span><b>無使用優惠</b></span></label>
+  <label class="opt"><input type="radio" name="promo" value="1"><span><b>淡大生福利一</b>單筆滿 $300，免費贈送「無裝飾棉花糖」一個</span></label>
+  <label class="opt"><input type="radio" name="promo" value="2"><span><b>淡大生福利二</b>好友揪團一起折：可可豆餅乾／瑪德蓮任選 3 包（盒）以上，每包（盒）折抵 $10</span></label>
+  <p class="hint" id="promoHint"></p>
+  <p class="note">＊面交時需出示淡江大學學生證或教職員證。</p>
+</section>
+
+<section class="card">
+  <h2>甜點品項</h2>
+  <div id="menu"></div>
+</section>
+
+<section class="card">
+  <h2>訂購人與面交資料</h2>
+  <label class="f" for="name">① 訂購人姓名</label>
+  <input type="text" id="name" autocomplete="name" placeholder="請輸入姓名">
+  <label class="f" for="phone">② 聯絡電話</label>
+  <input type="tel" id="phone" autocomplete="tel" placeholder="0912345678">
+  <label class="f">③ 面交日期與時間</label>
+  <div class="row"><input type="date" id="date"><select id="time"><option value="">請先選日期</option></select></div>
+  <p class="hint warn" id="slotHint" style="display:none"></p>
+  <p class="note">＊可面交時段：週一、5　13:05｜週二 12:10｜週三 10:00、13:05｜週四 12:10、13:05</p>
+  <p class="hint warn" id="dateHint" style="display:none">此日期為 3 天內急單，將加收急單費 $100，請先私訊確認檔期喔！</p>
+  <label class="f">④ 面交地點</label>
+  <div class="fixed">商館二樓出口</div>
+  <label class="f">⑤ 付款方式</label>
+  <div class="pay">
+    <label><input type="radio" name="pay" value="轉帳">轉帳</label>
+    <label><input type="radio" name="pay" value="面交付現">面交付現</label>
+  </div>
+  <label class="f" for="memo">⑥ 備註需求</label>
+  <textarea id="memo" rows="3" placeholder="口味、包裝、過敏等其他需求"></textarea>
+</section>
+
+<section class="card sum" id="checkout">
+  <h2>訂單確認</h2>
+  <div><span>商品總數量</span><span id="sCount">0</span></div>
+  <div><span>原始金額</span><span id="sOrig">$0</span></div>
+  <div><span>優惠／贈品</span><span id="sDisc">無</span></div>
+  <div><span>急單費</span><span id="sFee">無</span></div>
+  <div class="tot"><span>應付總金額</span><span id="sFinal">$0</span></div>
+  <button class="btn" id="copyBtn" type="button">生成並複製訂單明細</button>
+</section>
+<footer>© NiNiz Studio · 手作現做，用心每一口</footer>
+</div>
+
+<div class="bar"><span class="t">應付 <b id="bTotal">$0</b></span><button type="button" id="goCheckout">前往確認</button></div>
+
+<div class="toast" id="toast"></div>
+<div class="mask" id="mask"><div class="modal">
+  <h2 style="justify-content:center" id="mTitle">訂單已複製！</h2>
+  <p id="mMsg">請直接貼上並傳送至 NiNiz Studio 官方 LINE，收到闆娘回覆才算訂購成功喔！</p>
+  <pre id="mPre"></pre>
+  <button class="btn" id="mClose" type="button">我知道了</button>
+</div></div>
+
+<script>
+var MENU=[
+{c:"可可豆餅乾系列",n:"一包 8 個，口味不混搭",g:"pack",i:[["原味可可豆",120],["抹茶可可豆",130],["巧克力可可豆",130]]},
+{c:"棉花糖餅乾系列",n:"單顆",g:"mm",i:[["一口小怪獸",15],["無裝飾棉花糖",45],["怪獸棉花糖",55],["Lotus 棉花糖",60],["Oreo 棉花糖",60]]},
+{c:"貝殼瑪德蓮系列",n:"一盒 6 顆，口味不混搭",g:"pack",i:[["原味瑪德蓮",159],["巧克力瑪德蓮",169],["抹茶瑪德蓮",169],["鐵觀音瑪德蓮",169],["伯爵紅茶瑪德蓮",169]]}
+];
+var items=[],$=function(s){return document.querySelector(s)};
+var menu=$("#menu");
+MENU.forEach(function(s){
+  var h=document.createElement("div");h.className="cat";h.innerHTML=s.c+" <small>"+s.n+"</small>";menu.appendChild(h);
+  s.i.forEach(function(p){
+    var o={name:p[0],price:p[1],g:s.g,q:0};items.push(o);
+    var d=document.createElement("div");d.className="item";
+    d.innerHTML='<div class="nm">'+o.name+'<div class="pr">$'+o.price+'</div></div><div class="qty"><button type="button" aria-label="減少">－</button><span>0</span><button type="button" aria-label="增加">＋</button></div><div class="sb">$0</div>';
+    var b=d.querySelectorAll("button"),sp=d.querySelector("span"),sb=d.querySelector(".sb");
+    o.upd=function(){sp.textContent=o.q;sb.textContent="$"+o.q*o.price};
+    b[0].onclick=function(){if(o.q>0){o.q--;o.upd();calc()}};
+    b[1].onclick=function(){if(o.q<99){o.q++;o.upd();calc()}};
+    menu.appendChild(d);
+  });
+});
+
+function isUrgent(){
+  var v=$("#date").value;if(!v)return false;
+  var t=new Date();t.setHours(0,0,0,0);
+  var d=new Date(v+"T00:00:00");
+  return Math.round((d-t)/864e5)<3;
+}
+var S={};
+function calc(){
+  var cnt=0,orig=0,packs=0;
+  items.forEach(function(o){cnt+=o.q;orig+=o.q*o.price;if(o.g==="pack")packs+=o.q});
+  var promo=document.querySelector("input[name=promo]:checked").value;
+  var urgent=isUrgent(),disc=0,gift="",hint="",warn=false,label="無";
+  if(promo==="1"){
+    if(orig>=300){gift="無裝飾棉花糖 ×1（贈）";label="淡大生福利一：贈「無裝飾棉花糖」一個";hint="已達 $300，贈送無裝飾棉花糖一個！"}
+    else{hint="目前 $"+orig+"，還差 $"+(300-orig)+" 即可獲贈無裝飾棉花糖。";warn=true}
+  }else if(promo==="2"){
+    if(packs>=3){disc=packs*10;label="淡大生福利二：折抵 $"+disc+"（"+packs+" 包／盒 × $10）";hint="已符合條件，共 "+packs+" 包（盒）每包折 $10。"}
+    else{hint="餅乾／瑪德蓮目前 "+packs+" 包（盒），還差 "+(3-packs)+" 包（盒）即可享折扣。";warn=true}
+  }
+  var fee=(urgent&&cnt>0)?100:0,fin=orig-disc+fee;
+  S={cnt:cnt,orig:orig,disc:disc,gift:gift,label:label,fin:fin,promo:promo,fee:fee};
+  $("#promoHint").textContent=hint;$("#promoHint").className="hint"+(warn?" warn":"");
+  $("#sCount").textContent=cnt;$("#sOrig").textContent="$"+orig;
+  $("#sDisc").textContent=gift?gift:(disc?"－$"+disc:"無");$("#sFee").textContent=fee?"+$"+fee:"無";
+  $("#sFinal").textContent="$"+fin;$("#bTotal").textContent="$"+fin;
+}
+document.querySelectorAll("input[name=promo]").forEach(function(r){r.onchange=calc});
+var dt=$("#date");
+(function(){var n=new Date();dt.min=n.getFullYear()+"-"+("0"+(n.getMonth()+1)).slice(-2)+"-"+("0"+n.getDate()).slice(-2)})();
+var SLOTS={1:["13:05"],2:["12:10"],3:["10:00","13:05"],4:["12:10","13:05"],5:["13:05"]};
+function fillTime(){
+  var sel=$("#time"),v=dt.value,h=$("#slotHint");h.style.display="none";
+  if(!v){sel.innerHTML='<option value="">請先選日期</option>';return}
+  var s=SLOTS[new Date(v+"T00:00:00").getDay()]||[];
+  if(!s.length){sel.innerHTML='<option value="">此日不開放</option>';h.textContent="週六、週日不開放面交，請改選週一至週五。";h.style.display="block";return}
+  sel.innerHTML='<option value="">請選擇時間</option>'+s.map(function(x){return'<option value="'+x+'">'+x+'</option>'}).join("");
+  if(s.length===1)sel.value=s[0];
+}
+dt.onchange=function(){
+  fillTime();
+  var u=isUrgent();$("#dateHint").style.display=u?"block":"none";
+  if(u)show("溫馨提示","此日期為 3 天內急單，將加收急單費 $100，請先私訊確認檔期喔！");
+  calc();
+};
+
+function show(t,m,pre){
+  $("#mTitle").textContent=t;$("#mMsg").textContent=m;
+  var p=$("#mPre");p.style.display=pre?"block":"none";p.textContent=pre||"";
+  $("#mask").classList.add("on");
+}
+$("#mClose").onclick=function(){$("#mask").classList.remove("on")};
+
+function build(){
+  var L=["【NiNiz Studio 訂單】","","■ 訂購品項"];
+  items.forEach(function(o){if(o.q)L.push("・"+o.name+" ×"+o.q+"　$"+o.q*o.price)});
+  if(S.gift)L.push("・"+S.gift);
+  L.push("","■ 優惠："+S.label);
+  if(S.fee)L.push("※ 此為 3 天內急單，已加收急單費 $100（請先私訊確認檔期）");
+  L.push("","商品總數量："+S.cnt,"原始金額：$"+S.orig);
+  if(S.disc)L.push("優惠折抵：－$"+S.disc);
+  if(S.gift)L.push("贈品：無裝飾棉花糖 ×1");
+  if(S.fee)L.push("急單費：+$"+S.fee);
+  L.push("應付總金額：$"+S.fin,"","■ 訂購資料",
+    "① 姓名："+$("#name").value.trim(),
+    "② 電話："+$("#phone").value.trim(),
+    "③ 面交時間："+$("#date").value+" "+$("#time").value,
+    "④ 面交地點：商館二樓出口",
+    "⑤ 付款方式："+(document.querySelector("input[name=pay]:checked")||{}).value,
+    "⑥ 備註："+($("#memo").value.trim()||"無"));
+  return L.join("\n");
+}
+function copy(t){
+  return new Promise(function(res,rej){
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(res,function(){fb()})}else fb();
+    function fb(){try{var a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.focus();a.select();var ok=document.execCommand("copy");document.body.removeChild(a);ok?res():rej()}catch(e){rej()}}
+  });
+}
+$("#copyBtn").onclick=function(){
+  try{doCopy()}catch(err){show("發生錯誤","請重新整理頁面再試一次，或截圖私訊闆娘。")}
+};
+function doCopy(){
+  calc();
+  var miss=[];
+  if(!S.cnt)miss.push("甜點品項");
+  if(!$("#name").value.trim())miss.push("訂購人姓名");
+  if(!$("#phone").value.trim())miss.push("聯絡電話");
+  if(!$("#date").value||!$("#time").value)miss.push("面交日期與時間");
+  if(!document.querySelector("input[name=pay]:checked"))miss.push("付款方式");
+  if(miss.length){show("還有資料沒填喔","請補上：「"+miss.join("、")+"」");return}
+  var t=build();
+  copy(t).then(function(){
+    show("訂單已複製！","請直接貼上並傳送至 NiNiz Studio 官方 LINE，收到闆娘回覆才算訂購成功喔！");
+  },function(){
+    show("請手動複製","自動複製失敗，請長按下方文字複製後，傳送至 NiNiz Studio 官方 LINE。",t);
+  });
+}
+$("#goCheckout").onclick=function(){var el=$("#checkout");try{el.scrollIntoView(true)}catch(e){}var y=el.getBoundingClientRect().top+(window.pageYOffset||0)-12;try{window.scrollTo(0,y)}catch(e){}try{document.documentElement.scrollTop=y;document.body.scrollTop=y}catch(e){}
+  var tt=$("#toast");tt.textContent="訂單確認金額無誤，將它複製給我們的官方就完成訂購囉！";tt.style.display="block";
+  el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");
+  clearTimeout(window._tt);window._tt=setTimeout(function(){tt.style.display="none"},4200);
+};
+calc();
+</script>
+</body>
+</html>
