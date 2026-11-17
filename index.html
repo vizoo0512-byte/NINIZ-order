@@ -58,6 +58,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--caramel);outline
 .sum .tot{border-top:1px solid var(--line);margin-top:6px;padding-top:10px;font-size:20px;font-weight:700}
 .btn{width:100%;border:0;border-radius:14px;padding:15px;background:var(--brown);color:var(--on-brown);font:inherit;font-size:16px;font-weight:700;letter-spacing:.06em;cursor:pointer;margin-top:12px}
 .btn:active{opacity:.85}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.item.so{opacity:.5}.item.so .qty,.item.so .sb{display:none}
 .bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:center;z-index:5}
 .bar div{max-width:560px}
 .bar button{background:var(--caramel);color:#fff;border:0;padding:10px 18px;border-radius:99px;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
@@ -79,6 +81,7 @@ footer{text-align:center;font-size:12px;opacity:.6;margin:24px 0 8px}
   <h1 class="brand">NiNiz Studio</h1>
   <p class="sub">手作甜點訂購單</p>
   <a class="ig" href="https://www.instagram.com/niniz_studio" target="_blank" rel="noopener">IG｜@niniz_studio</a>
+  <a class="ig" href="https://lin.ee/r17jPLo" target="_blank" rel="noopener" style="margin-left:6px">LINE｜官方帳號</a>
 </header>
 
 <section class="card">
@@ -148,10 +151,13 @@ footer{text-align:center;font-size:12px;opacity:.6;margin:24px 0 8px}
   <h2 style="justify-content:center" id="mTitle">訂單已複製！</h2>
   <p id="mMsg">請直接貼上並傳送至 NiNiz Studio 官方 LINE，收到闆娘回覆才算訂購成功喔！</p>
   <pre id="mPre"></pre>
+  <a class="btn" id="mLine" href="https://lin.ee/r17jPLo" target="_blank" rel="noopener" style="display:none;text-decoration:none;text-align:center;background:var(--caramel);color:#fff">前往官方 LINE</a>
   <button class="btn" id="mClose" type="button">我知道了</button>
 </div></div>
 
+<script src="config.js"></script>
 <script>
+var CFG=window.NINIZ||{};
 var MENU=[
 {c:"可可豆餅乾系列",n:"一包 8 個，口味不混搭",g:"pack",i:[["原味可可豆",120],["抹茶可可豆",130],["巧克力可可豆",130]]},
 {c:"棉花糖餅乾系列",n:"單顆",g:"mm",i:[["一口小怪獸",15],["無裝飾棉花糖",45],["怪獸棉花糖",55],["Lotus 棉花糖",60],["Oreo 棉花糖",60]]},
@@ -167,6 +173,7 @@ MENU.forEach(function(s){
     var d=document.createElement("div");d.className="item";
     d.innerHTML=(IMG[o.name]?'<img class="ph" src="'+IMG[o.name]+'.jpg" alt="'+o.name+'" loading="lazy" onerror="this.style.display=\'none\'">':'')+'<div class="nm">'+o.name+'<div class="pr">$'+o.price+'</div></div><div class="qty"><button type="button" aria-label="減少">－</button><span>0</span><button type="button" aria-label="增加">＋</button></div><div class="sb">$0</div>';
     var b=d.querySelectorAll("button"),sp=d.querySelector("span"),sb=d.querySelector(".sb");
+    if((CFG.soldOut||[]).indexOf(o.name)>=0){d.classList.add("so");d.querySelector(".nm").insertAdjacentHTML("beforeend",'<div class="pr">已售完</div>')}
     o.upd=function(){sp.textContent=o.q;sb.textContent="$"+o.q*o.price};
     b[0].onclick=function(){if(o.q>0){o.q--;o.upd();calc()}};
     b[1].onclick=function(){if(o.q<99){o.q++;o.upd();calc()}};
@@ -209,8 +216,10 @@ function fillTime(){
   if(!v){sel.innerHTML='<option value="">請先選日期</option>';return}
   var s=SLOTS[new Date(v+"T00:00:00").getDay()]||[];
   if(!s.length){sel.innerHTML='<option value="">此日不開放</option>';h.textContent="週六、週日不開放面交，請改選週一至週五。";h.style.display="block";return}
-  sel.innerHTML='<option value="">請選擇時間</option>'+s.map(function(x){return'<option value="'+x+'">'+x+'</option>'}).join("");
-  if(s.length===1)sel.value=s[0];
+  var av=0,mx=CFG.max||10;
+  sel.innerHTML='<option value="">請選擇時間</option>'+s.map(function(x){var left=mx-((CFG.slots||{})[v+" "+x]||0);if(left<=0)return'<option value="" disabled>'+x+'（已額滿）</option>';av++;return'<option value="'+x+'">'+x+(left<=3?'（剩 '+left+' 位）':'')+'</option>'}).join("");
+  if(!av){h.textContent="此日所有時段已額滿，請改選其他日期。";h.style.display="block";return}
+  if(av===1&&s.length===1)sel.value=s[0];
 }
 dt.onchange=function(){
   fillTime();
@@ -220,7 +229,7 @@ dt.onchange=function(){
 };
 
 function show(t,m,pre){
-  $("#mTitle").textContent=t;$("#mMsg").textContent=m;
+  $("#mLine").style.display="none";$("#mTitle").textContent=t;$("#mMsg").textContent=m;
   var p=$("#mPre");p.style.display=pre?"block":"none";p.textContent=pre||"";
   $("#mask").classList.add("on");
 }
@@ -265,7 +274,7 @@ function doCopy(){
   if(miss.length){show("還有資料沒填喔","請補上：「"+miss.join("、")+"」");return}
   var t=build();
   copy(t).then(function(){
-    show("訂單已複製！","請直接貼上並傳送至 NiNiz Studio 官方 LINE，收到闆娘回覆才算訂購成功喔！");
+    show("訂單已複製！","請直接貼上並傳送至 NiNiz Studio 官方 LINE，收到闆娘回覆才算訂購成功喔！");$("#mLine").style.display="block";
   },function(){
     show("請手動複製","自動複製失敗，請長按下方文字複製後，傳送至 NiNiz Studio 官方 LINE。",t);
   });
@@ -275,6 +284,7 @@ $("#goCheckout").onclick=function(){var el=$("#checkout");try{el.scrollIntoView(
   el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");
   clearTimeout(window._tt);window._tt=setTimeout(function(){tt.style.display="none"},4200);
 };
+if(CFG.paused){document.querySelector("header").insertAdjacentHTML("afterend",'<section class="card" style="border-color:var(--caramel);text-align:center"><b>目前暫停接單</b><br>'+(CFG.pausedMsg||"請先私訊官方 LINE 詢問檔期")+'</section>');$("#copyBtn").disabled=true;$("#copyBtn").textContent="目前暫停接單"}
 calc();
 </script>
 </body>
