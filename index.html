@@ -28,6 +28,7 @@ details li{margin-bottom:6px}
 .opt{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer;font-size:14px}
 .opt:has(input:checked){border-color:var(--caramel);background:var(--soft)}
 .opt input{margin-top:4px;accent-color:var(--caramel)}
+.opt.on{border-color:var(--caramel);background:var(--soft)}
 .opt b{display:block;font-size:15px}
 .hint{font-size:13px;margin:4px 0 0;color:var(--caramel)}
 .hint.warn{color:var(--warn)}
@@ -98,11 +99,13 @@ footer{text-align:center;font-size:12px;opacity:.6;margin:24px 0 8px}
 
 <section class="card">
   <h2>淡大生專屬優惠</h2>
-  <label class="opt"><input type="radio" name="promo" value="0" checked><span><b>無使用優惠</b></span></label>
-  <label class="opt"><input type="radio" name="promo" value="1"><span><b>淡大生福利一</b>單筆滿 $300，免費贈送「無裝飾棉花糖」一個</span></label>
-  <label class="opt"><input type="radio" name="promo" value="2"><span><b>淡大生福利二</b>好友揪團一起折：可可豆餅乾／瑪德蓮任選 3 包（盒）以上，每包（盒）折抵 $10</span></label>
+  <p class="note" style="margin:0 0 10px">請先選擇你的身分</p>
+  <div class="pay" style="margin-bottom:10px"><label><input type="radio" name="tku" value="yes" id="tkuYes">我是淡大學生／教職員</label><label><input type="radio" name="tku" value="no" checked>我不是淡大學生／教職員</label></div>
+  <div id="promoBox" style="display:none"><div class="opt" id="o1" style="cursor:default"><span><b>淡大生福利一</b>單筆滿 $300，免費贈送「無裝飾棉花糖」一個<div class="hint" id="st1"></div></span></div>
+  <div class="opt" id="o2" style="cursor:default"><span><b>淡大生福利二</b>好友揪團一起折：可可豆餅乾／瑪德蓮任選 3 包（盒）以上，每包（盒）折抵 $10<div class="hint" id="st2"></div></span></div>
   <p class="hint" id="promoHint"></p>
-  <p class="note">＊面交時需出示淡江大學學生證或教職員證。</p>
+  <p class="note">＊面交時需出示淡江大學學生證或教職員證。</p></div>
+  <div id="promoBox2"><div class="opt" id="o3" style="cursor:default"><span><b>滿額贈禮</b>單筆滿 $500，免費贈送「怪獸棉花糖」一個<div class="hint" id="st3"></div></span></div></div>
 </section>
 
 <section class="card">
@@ -117,12 +120,14 @@ footer{text-align:center;font-size:12px;opacity:.6;margin:24px 0 8px}
   <label class="f" for="phone">② 聯絡電話</label>
   <input type="tel" id="phone" autocomplete="tel" placeholder="0912345678">
   <label class="f">③ 面交日期與時間</label>
-  <div class="row"><input type="date" id="date"><select id="time"><option value="">請先選日期</option></select></div>
+  <div id="timeBox">
+  <div class="row"><select id="date"><option value="">請選擇日期</option></select><select id="time"><option value="">請先選日期</option></select></div>
   <p class="hint warn" id="slotHint" style="display:none"></p>
   <p class="note">＊可面交時段：週一、週五 13:05｜週二 12:10｜週三 10:00、13:05｜週四 12:10、13:05</p>
-  <p class="hint warn" id="dateHint" style="display:none">此日期為 3 天內急單，將加收急單費 $100，請先私訊確認檔期喔！</p>
+  <p class="hint warn" id="dateHint" style="display:none">此日期為 3 天內急單，將加收急單費 $100，請先私訊確認檔期喔！</p></div>
+  <div class="fixed" id="timeMsg" style="display:none">面交時間請私訊官方 LINE 討論，<a href="https://lin.ee/r17jPLo" target="_blank" rel="noopener" style="color:var(--caramel)">前往官方 LINE</a></div>
   <label class="f">④ 面交地點</label>
-  <div class="fixed">商館二樓出口</div>
+  <div class="fixed" id="place">輕軌濱海義山站</div>
   <label class="f">⑤ 付款方式</label>
   <div class="pay">
     <label><input type="radio" name="pay" value="轉帳">轉帳</label>
@@ -141,6 +146,7 @@ footer{text-align:center;font-size:12px;opacity:.6;margin:24px 0 8px}
   <div class="tot"><span>應付總金額</span><span id="sFinal">$0</span></div>
   <button class="btn" id="copyBtn" type="button">生成並複製訂單明細</button>
 </section>
+<section class="card" style="text-align:center"><b>有問題或要先確認檔期？</b><p class="note">急單、生日棉花糖餅乾，歡迎先私訊官方 LINE</p><a class="btn" href="https://lin.ee/r17jPLo" target="_blank" rel="noopener" style="display:block;text-decoration:none;text-align:center;background:var(--caramel);color:#fff">前往官方 LINE</a></section>
 <footer>© NiNiz Studio · 手作現做，用心每一口</footer>
 </div>
 
@@ -191,25 +197,39 @@ var S={};
 function calc(){
   var cnt=0,orig=0,packs=0;
   items.forEach(function(o){cnt+=o.q;orig+=o.q*o.price;if(o.g==="pack")packs+=o.q});
-  var promo=document.querySelector("input[name=promo]:checked").value;
-  var urgent=isUrgent(),disc=0,gift="",hint="",warn=false,label="無";
-  if(promo==="1"){
-    if(orig>=300){gift="無裝飾棉花糖 ×1（贈）";label="淡大生福利一：贈「無裝飾棉花糖」一個";hint="已達 $300，贈送無裝飾棉花糖一個！"}
-    else{hint="目前 $"+orig+"，還差 $"+(300-orig)+" 即可獲贈無裝飾棉花糖。";warn=true}
-  }else if(promo==="2"){
-    if(packs>=3){disc=packs*10;label="淡大生福利二：折抵 $"+disc+"（"+packs+" 包／盒 × $10）";hint="已符合條件，共 "+packs+" 包（盒）每包折 $10。"}
-    else{hint="餅乾／瑪德蓮目前 "+packs+" 包（盒），還差 "+(3-packs)+" 包（盒）即可享折扣。";warn=true}
+  var tku=$("#tkuYes").checked,p1=tku,p2=tku;$("#promoBox").style.display=tku?"block":"none";$("#timeBox").style.display=tku?"block":"none";$("#timeMsg").style.display=tku?"none":"block";$("#promoBox2").style.display=tku?"none":"block";$("#place").textContent=tku?"商館二樓出口":"輕軌濱海義山站";
+  var urgent=tku&&isUrgent(),disc=0,gift="",hs=[],warn=false,ls=[];
+  if(p1){
+    if(orig>=300){gift="無裝飾棉花糖 ×1（贈）";ls.push("淡大生福利一：贈「無裝飾棉花糖」一個");hs.push("福利一：已達 $300，贈送無裝飾棉花糖一個！")}
+    else{hs.push("福利一：目前 $"+orig+"，還差 $"+(300-orig)+" 即可獲贈無裝飾棉花糖。");warn=true}
   }
+  if(p2){
+    if(packs>=3){disc=packs*10;ls.push("淡大生福利二：折抵 $"+disc+"（"+packs+" 包／盒 × $10）");hs.push("福利二：共 "+packs+" 包（盒），每包折 $10。")}
+    else{hs.push("福利二：餅乾／瑪德蓮目前 "+packs+" 包（盒），還差 "+(3-packs)+" 包（盒）即可享折扣。");warn=true}
+  }
+  if(!tku&&orig>=500){gift="怪獸棉花糖 ×1（贈）";ls.push("滿 $500 贈「怪獸棉花糖」一個")}
+  $("#o3").classList.toggle("on",!tku&&!!gift);$("#st3").textContent=gift?"✓ 已達成，系統自動贈送":"還差 $"+Math.max(0,500-orig)+" 即可達成";
+  var label=ls.length?ls.join("＋"):"無",hint="";
+  $("#o1").classList.toggle("on",!!gift);$("#o2").classList.toggle("on",disc>0);
+  $("#st1").textContent=!tku?"選擇「我是淡大學生／教職員」才可享有":gift?"✓ 已達成，系統自動贈送":"還差 $"+Math.max(0,300-orig)+" 即可達成";
+  $("#st2").textContent=!tku?"選擇「我是淡大學生／教職員」才可享有":disc>0?"✓ 已達成，自動折抵 $"+disc:"餅乾／瑪德蓮目前 "+packs+" 包（盒），還差 "+Math.max(0,3-packs)+" 包（盒）即可達成";
   var fee=(urgent&&cnt>0)?100:0,fin=orig-disc+fee;
-  S={cnt:cnt,orig:orig,disc:disc,gift:gift,label:label,fin:fin,promo:promo,fee:fee};
+  S={cnt:cnt,orig:orig,disc:disc,gift:gift,label:label,fin:fin,fee:fee,tku:tku};
   $("#promoHint").textContent=hint;$("#promoHint").className="hint"+(warn?" warn":"");
   $("#sCount").textContent=cnt;$("#sOrig").textContent="$"+orig;
   $("#sDisc").textContent=gift?gift:(disc?"－$"+disc:"無");$("#sFee").textContent=fee?"+$"+fee:"無";
   $("#sFinal").textContent="$"+fin;$("#bTotal").textContent="$"+fin;
 }
-document.querySelectorAll("input[name=promo]").forEach(function(r){r.onchange=calc});
+document.querySelectorAll("input[name=tku]").forEach(function(r){r.onchange=calc});
 var dt=$("#date");
 (function(){var n=new Date();dt.min=n.getFullYear()+"-"+("0"+(n.getMonth()+1)).slice(-2)+"-"+("0"+n.getDate()).slice(-2)})();
+(function(){
+  var w=["日","一","二","三","四","五","六"],h='<option value="">請選擇日期</option>',d=new Date();d.setHours(0,0,0,0);
+  for(var i=0;i<42;i++){var x=new Date(d);x.setDate(d.getDate()+i);var g=x.getDay();if(g===0||g===6)continue;
+    var v=x.getFullYear()+"-"+("0"+(x.getMonth()+1)).slice(-2)+"-"+("0"+x.getDate()).slice(-2);
+    h+='<option value="'+v+'">'+(x.getMonth()+1)+"月"+x.getDate()+"日（週"+w[g]+"）</option>"}
+  dt.innerHTML=h;
+})();
 var SLOTS={1:["13:05"],2:["12:10"],3:["10:00","13:05"],4:["12:10","13:05"],5:["13:05"]};
 function fillTime(){
   var sel=$("#time"),v=dt.value,h=$("#slotHint");h.style.display="none";
@@ -239,17 +259,17 @@ function build(){
   var L=["【NiNiz Studio 訂單】","","■ 訂購品項"];
   items.forEach(function(o){if(o.q)L.push("・"+o.name+" ×"+o.q+"　$"+o.q*o.price)});
   if(S.gift)L.push("・"+S.gift);
-  L.push("","■ 優惠："+S.label);
+  L.push("","■ 優惠："+S.label+(S.tku?"（淡大學生／教職員，面交出示證件）":""));
   if(S.fee)L.push("※ 此為 3 天內急單，已加收急單費 $100（請先私訊確認檔期）");
   L.push("","商品總數量："+S.cnt,"原始金額：$"+S.orig);
   if(S.disc)L.push("優惠折抵：－$"+S.disc);
-  if(S.gift)L.push("贈品：無裝飾棉花糖 ×1");
+  if(S.gift)L.push("贈品："+S.gift.replace("（贈）",""));
   if(S.fee)L.push("急單費：+$"+S.fee);
   L.push("應付總金額：$"+S.fin,"","■ 訂購資料",
     "① 姓名："+$("#name").value.trim(),
     "② 電話："+$("#phone").value.trim(),
-    "③ 面交時間："+$("#date").value+" "+$("#time").value,
-    "④ 面交地點：商館二樓出口",
+    "③ 面交時間："+(S.tku?$("#date").value+" "+$("#time").value:"請私訊官方 LINE 討論時間"),
+    "④ 面交地點："+(S.tku?"商館二樓出口":"輕軌濱海義山站"),
     "⑤ 付款方式："+(document.querySelector("input[name=pay]:checked")||{}).value,
     "⑥ 備註："+($("#memo").value.trim()||"無"));
   return L.join("\n");
@@ -269,7 +289,7 @@ function doCopy(){
   if(!S.cnt)miss.push("甜點品項");
   if(!$("#name").value.trim())miss.push("訂購人姓名");
   if(!$("#phone").value.trim())miss.push("聯絡電話");
-  if(!$("#date").value||!$("#time").value)miss.push("面交日期與時間");
+  if(S.tku&&(!$("#date").value||!$("#time").value))miss.push("面交日期與時間");
   if(!document.querySelector("input[name=pay]:checked"))miss.push("付款方式");
   if(miss.length){show("還有資料沒填喔","請補上：「"+miss.join("、")+"」");return}
   var t=build();
