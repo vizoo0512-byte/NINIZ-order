@@ -101,11 +101,11 @@ footer{text-align:center;font-size:12px;opacity:.6;margin:24px 0 8px}
   <h2>淡大生專屬優惠</h2>
   <p class="note" style="margin:0 0 10px">請先選擇你的身分</p>
   <div class="pay" style="margin-bottom:10px"><label><input type="radio" name="tku" value="yes" id="tkuYes">我是淡大學生／教職員</label><label><input type="radio" name="tku" value="no" checked>我不是淡大學生／教職員</label></div>
-  <div id="promoBox" style="display:none"><div class="opt" id="o1" style="cursor:default"><span><b>淡大生福利一</b>單筆滿 $300，免費贈送「無裝飾棉花糖」一個<div class="hint" id="st1"></div></span></div>
+  <div id="promoBox" style="display:none"><div class="opt" id="o1" style="cursor:default"><span><b>淡大生福利一</b>每滿 $300，免費贈送「無裝飾棉花糖」一個（滿 $600 送兩個，以此類推）<div class="hint" id="st1"></div></span></div>
   <div class="opt" id="o2" style="cursor:default"><span><b>淡大生福利二</b>好友揪團一起折：可可豆餅乾／瑪德蓮任選 3 包（盒）以上，每包（盒）折抵 $10<div class="hint" id="st2"></div></span></div>
   <p class="hint" id="promoHint"></p>
   <p class="note">＊面交時需出示淡江大學學生證或教職員證。</p></div>
-  <div id="promoBox2"><div class="opt" id="o3" style="cursor:default"><span><b>滿額贈禮</b>單筆滿 $500，免費贈送「怪獸棉花糖」一個<div class="hint" id="st3"></div></span></div></div>
+  <div id="promoBox2"><div class="opt" id="o3" style="cursor:default"><span><b>滿額贈禮</b>每滿 $500，免費贈送「怪獸棉花糖」一個（滿 $1000 送兩個，以此類推）<div class="hint" id="st3"></div></span></div></div>
 </section>
 
 <section class="card">
@@ -200,18 +200,18 @@ function calc(){
   var tku=$("#tkuYes").checked,p1=tku,p2=tku;$("#promoBox").style.display=tku?"block":"none";$("#timeBox").style.display=tku?"block":"none";$("#timeMsg").style.display=tku?"none":"block";$("#promoBox2").style.display=tku?"none":"block";$("#place").textContent=tku?"商館二樓出口":"輕軌濱海義山站";
   var urgent=tku&&isUrgent(),disc=0,gift="",hs=[],warn=false,ls=[];
   if(p1){
-    if(orig>=300){gift="無裝飾棉花糖 ×1（贈）";ls.push("淡大生福利一：贈「無裝飾棉花糖」一個");hs.push("福利一：已達 $300，贈送無裝飾棉花糖一個！")}
+    if(orig>=300){var n1=Math.floor(orig/300);gift="無裝飾棉花糖 ×"+n1+"（贈）";ls.push("淡大生福利一：每滿 $300 贈「無裝飾棉花糖」，共 "+n1+" 個");hs.push("福利一：已達 $300，贈送無裝飾棉花糖一個！")}
     else{hs.push("福利一：目前 $"+orig+"，還差 $"+(300-orig)+" 即可獲贈無裝飾棉花糖。");warn=true}
   }
   if(p2){
     if(packs>=3){disc=packs*10;ls.push("淡大生福利二：折抵 $"+disc+"（"+packs+" 包／盒 × $10）");hs.push("福利二：共 "+packs+" 包（盒），每包折 $10。")}
     else{hs.push("福利二：餅乾／瑪德蓮目前 "+packs+" 包（盒），還差 "+(3-packs)+" 包（盒）即可享折扣。");warn=true}
   }
-  if(!tku&&orig>=500){gift="怪獸棉花糖 ×1（贈）";ls.push("滿 $500 贈「怪獸棉花糖」一個")}
-  $("#o3").classList.toggle("on",!tku&&!!gift);$("#st3").textContent=gift?"✓ 已達成，系統自動贈送":"還差 $"+Math.max(0,500-orig)+" 即可達成";
+  if(!tku&&orig>=500){var n3=Math.floor(orig/500);gift="怪獸棉花糖 ×"+n3+"（贈）";ls.push("每滿 $500 贈「怪獸棉花糖」，共 "+n3+" 個")}
+  $("#o3").classList.toggle("on",!tku&&!!gift);$("#st3").textContent=gift?"✓ 已自動贈送 "+Math.floor(orig/500)+" 個，再消費 $"+(500-orig%500)+" 多送 1 個":"還差 $"+Math.max(0,500-orig)+" 即可達成";
   var label=ls.length?ls.join("＋"):"無",hint="";
   $("#o1").classList.toggle("on",!!gift);$("#o2").classList.toggle("on",disc>0);
-  $("#st1").textContent=!tku?"選擇「我是淡大學生／教職員」才可享有":gift?"✓ 已達成，系統自動贈送":"還差 $"+Math.max(0,300-orig)+" 即可達成";
+  $("#st1").textContent=!tku?"選擇「我是淡大學生／教職員」才可享有":gift?"✓ 已自動贈送 "+Math.floor(orig/300)+" 個，再消費 $"+(300-orig%300)+" 多送 1 個":"還差 $"+Math.max(0,300-orig)+" 即可達成";
   $("#st2").textContent=!tku?"選擇「我是淡大學生／教職員」才可享有":disc>0?"✓ 已達成，自動折抵 $"+disc:"餅乾／瑪德蓮目前 "+packs+" 包（盒），還差 "+Math.max(0,3-packs)+" 包（盒）即可達成";
   var fee=(urgent&&cnt>0)?100:0,fin=orig-disc+fee;
   S={cnt:cnt,orig:orig,disc:disc,gift:gift,label:label,fin:fin,fee:fee,tku:tku};
