@@ -37,6 +37,7 @@ details li{margin-bottom:6px}
 .item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px dashed var(--line)}
 .item:last-child{border-bottom:0}
 .nm{flex:1;font-size:15px}
+.ph{width:64px;height:64px;object-fit:cover;border-radius:12px;flex:none;background:var(--soft)}
 .pr{font-size:13px;color:var(--caramel)}
 .qty{display:flex;align-items:center;gap:8px}
 .qty button{width:32px;height:32px;border-radius:50%;border:1px solid var(--caramel);background:transparent;color:var(--caramel);font-size:18px;line-height:1;cursor:pointer;padding:0}
@@ -115,7 +116,7 @@ footer{text-align:center;font-size:12px;opacity:.6;margin:24px 0 8px}
   <label class="f">③ 面交日期與時間</label>
   <div class="row"><input type="date" id="date"><select id="time"><option value="">請先選日期</option></select></div>
   <p class="hint warn" id="slotHint" style="display:none"></p>
-  <p class="note">＊可面交時段：週一、5　13:05｜週二 12:10｜週三 10:00、13:05｜週四 12:10、13:05</p>
+  <p class="note">＊可面交時段：週一、週五 13:05｜週二 12:10｜週三 10:00、13:05｜週四 12:10、13:05</p>
   <p class="hint warn" id="dateHint" style="display:none">此日期為 3 天內急單，將加收急單費 $100，請先私訊確認檔期喔！</p>
   <label class="f">④ 面交地點</label>
   <div class="fixed">商館二樓出口</div>
@@ -156,6 +157,7 @@ var MENU=[
 {c:"棉花糖餅乾系列",n:"單顆",g:"mm",i:[["一口小怪獸",15],["無裝飾棉花糖",45],["怪獸棉花糖",55],["Lotus 棉花糖",60],["Oreo 棉花糖",60]]},
 {c:"貝殼瑪德蓮系列",n:"一盒 6 顆，口味不混搭",g:"pack",i:[["原味瑪德蓮",159],["巧克力瑪德蓮",169],["抹茶瑪德蓮",169],["鐵觀音瑪德蓮",169],["伯爵紅茶瑪德蓮",169]]}
 ];
+var IMG={"原味可可豆":"cocoa-original","拹茶可可豆":"cocoa-matcha","巧克力可可豆":"cocoa-choco","一口小怪獸":"mini-monster","無裝飾棉花糖":"marshmallow-plain","怪獸棉花糖":"monster","Lotus 棉花糖":"lotus","Oreo 棉花糖":"oreo","原味瑪德蓮":"madeleine-original","巧克力瑪德蓮":"madeleine-choco","拹茶瑪德蓮":"madeleine-matcha","鐵觀音瑪德蓮":"madeleine-tieguanyin","伯爵紅茶瑪德蓮":"madeleine-earlgrey"};
 var items=[],$=function(s){return document.querySelector(s)};
 var menu=$("#menu");
 MENU.forEach(function(s){
@@ -163,7 +165,7 @@ MENU.forEach(function(s){
   s.i.forEach(function(p){
     var o={name:p[0],price:p[1],g:s.g,q:0};items.push(o);
     var d=document.createElement("div");d.className="item";
-    d.innerHTML='<div class="nm">'+o.name+'<div class="pr">$'+o.price+'</div></div><div class="qty"><button type="button" aria-label="減少">－</button><span>0</span><button type="button" aria-label="增加">＋</button></div><div class="sb">$0</div>';
+    d.innerHTML=(IMG[o.name]?'<img class="ph" src="'+IMG[o.name]+'.jpg" alt="'+o.name+'" loading="lazy" onerror="this.style.display=\'none\'">':'')+'<div class="nm">'+o.name+'<div class="pr">$'+o.price+'</div></div><div class="qty"><button type="button" aria-label="減少">－</button><span>0</span><button type="button" aria-label="增加">＋</button></div><div class="sb">$0</div>';
     var b=d.querySelectorAll("button"),sp=d.querySelector("span"),sb=d.querySelector(".sb");
     o.upd=function(){sp.textContent=o.q;sb.textContent="$"+o.q*o.price};
     b[0].onclick=function(){if(o.q>0){o.q--;o.upd();calc()}};
